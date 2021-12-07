@@ -1,0 +1,87 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+  - stage: Build
+    displayName: BuildDisplay
+    jobs:
+      - job: 'BuildJob'
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your commands here                  
+                echo 'Deploy success'
+  - stage: Test
+    displayName: Test
+    jobs:
+      - job: 'TestJob'
+        steps:
+        - task: Maven@3
+          inputs:
+            mavenPomFile: 'pom.xml'
+            mavenOptions: '-Xmx3072m'
+            javaHomeOption: 'JDKVersion'
+            jdkVersionOption: '1.8'
+            jdkArchitectureOption: 'x64'
+            publishJUnitResults: true
+            testResultsFiles: '**/surefire-reports/TEST-*.xml'
+            goals: 'package'
+  - stage: Register
+    jobs:
+        - job: 'RegisterJob'
+          steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your commands here                  
+                echo 'Deploy success'
+          - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
+            inputs:
+              connectedServiceName: 'empanushtesting-sc'
+              artifactsPayload: |
+                {
+                                  "artifacts": [
+                                      {
+                                        "name": "_DevopsDemoProject",
+                                        "version": "1.$(Build.BuildId)",
+                                        "semanticVersion": "1.$(Build.BuildId).0",
+                                        "repositoryName": "DevopsDemoProject"
+                                      }
+                                  ]
+                                }
+          - task: ServiceNow-DevOps-Agent-Package-Registration@1
+            inputs:
+              connectedServiceName: 'empanushtesting-sc'
+              packageName: 'Demo Artifact Package'
+              artifactsPayload: |
+                {
+                                  "artifacts": [
+                                      {
+                                        "name": "_DevopsDemoProject",
+                                        "version": "1.$(Build.BuildId)",
+                                        "semanticVersion": "1.$(Build.BuildId).0",
+                                        "repositoryName": "DevopsDemoProject"
+                                      }
+                                  ]
+                                }
+  - stage: Deploy
+    jobs:
+        - job: 'DeployJob'
+          steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                # Write your commands here                  
+                echo 'Prod Successful'
