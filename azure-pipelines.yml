@@ -48,7 +48,7 @@ stages:
                 echo 'Deploy success'
           - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
             inputs:
-              connectedServiceName: 'empanushtesting-sc'
+              connectedServiceName: 'emprpolama1-DevOpsTest-sc'
               artifactsPayload: |
                 {
                                   "artifacts": [
@@ -62,7 +62,7 @@ stages:
                                 }
           - task: ServiceNow-DevOps-Agent-Package-Registration@1
             inputs:
-              connectedServiceName: 'empanushtesting-sc'
+              connectedServiceName: 'emprpolama1-DevOpsTest-sc'
               packageName: 'Demo Artifact Package'
               artifactsPayload: |
                 {
